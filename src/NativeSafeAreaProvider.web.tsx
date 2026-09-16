@@ -16,8 +16,22 @@ export function NativeSafeAreaProvider({
   children,
   style,
   onInsetsChange,
+  ref,
 }: NativeSafeAreaProviderProps) {
   const viewRef = React.useRef<View>(null);
+
+  const setRef = React.useCallback(
+    (view: View | null) => {
+      viewRef.current = view;
+
+      if (typeof ref === 'function') {
+        return ref(view);
+      } else if (ref != null) {
+        ref.current = view;
+      }
+    },
+    [ref],
+  );
 
   React.useEffect(() => {
     // Skip for SSR.
@@ -108,7 +122,7 @@ export function NativeSafeAreaProvider({
   }, [onInsetsChange]);
 
   return (
-    <View ref={viewRef} style={style}>
+    <View ref={setRef} style={style}>
       {children}
     </View>
   );
